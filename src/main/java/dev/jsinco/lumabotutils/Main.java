@@ -5,7 +5,7 @@ import dev.jsinco.abstractjavafilelib.schemas.SnakeYamlConfig;
 import dev.jsinco.lumabotutils.commands.CommandManager;
 import dev.jsinco.lumabotutils.listeners.EventManager;
 import dev.jsinco.lumabotutils.modules.Introductions;
-import dev.jsinco.lumabotutils.modules.SuggestionReactions;
+import dev.jsinco.lumabotutils.modules.Suggestions;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -45,7 +45,7 @@ public class Main {
         jda.addEventListener(new EventManager());
 
         EventManager.registerListener(new CommandManager());
-        EventManager.registerListener(new SuggestionReactions());
+        Util.registerCommandAndListener(new Suggestions());
         Util.registerCommandAndListener(new Introductions());
     }
 }
