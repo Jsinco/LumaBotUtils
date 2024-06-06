@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction
 interface Command {
     fun execute(event: SlashCommandInteraction)
 
-    fun getOptions(): List<CommandOptions>
+    fun getOptions(): List<CommandOptions>?
 
     fun getName(): String
 
