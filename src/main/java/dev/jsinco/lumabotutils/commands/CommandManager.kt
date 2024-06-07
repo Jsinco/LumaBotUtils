@@ -4,17 +4,23 @@ import dev.jsinco.lumabotutils.listeners.Listener
 import dev.jsinco.lumabotutils.listeners.ListenerType
 import dev.jsinco.lumabotutils.Main
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import java.util.TimerTask
 
-class CommandManager : Listener {
+class CommandManager : Listener, TimerTask() {
 
     companion object {
         val commands: MutableMap<String, Command> = mutableMapOf()
 
         @JvmStatic
-        @Suppress("duplicatedcode")
+
         fun registerCommand(command: Command) {
-            val jda = Main.getJda()
             commands[command.getName()] = command
+            upsertCommand(command)
+        }
+
+        @Suppress("duplicatedcode")
+        private fun upsertCommand(command: Command) {
+            val jda = Main.getJda()
 
             if (command.isGlobal()) {
                 val commandCreateAction = jda.upsertCommand(command.getName(), command.getDescription())
@@ -35,7 +41,6 @@ class CommandManager : Listener {
                     commandCreateAction.queue()
                 }
             }
-
         }
     }
 
@@ -55,6 +60,13 @@ class CommandManager : Listener {
 
     override fun registerFor(): List<ListenerType> {
         return listOf(ListenerType.SLASH_COMMAND)
+    }
+
+    override fun run() {
+        // re-register commands in case they've been removed for some reason
+        for (command in commands.values) {
+            upsertCommand(command)
+        }
     }
 
 }

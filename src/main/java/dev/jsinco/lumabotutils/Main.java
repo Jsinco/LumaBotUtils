@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.util.Timer;
+
 public class Main {
 
     private static JDA jda;
@@ -44,7 +46,15 @@ public class Main {
 
         jda.addEventListener(new EventManager());
 
-        EventManager.registerListener(new CommandManager());
+        final CommandManager cmdManager = new CommandManager();
+        EventManager.registerListener(cmdManager);
+
+
+        // Start timer runnable
+        final Timer timer = new Timer();
+        timer.schedule(cmdManager, 0L, 300000L);
+
+
         Util.registerCommandAndListener(new Suggestions());
         Util.registerCommandAndListener(new Introductions());
     }
