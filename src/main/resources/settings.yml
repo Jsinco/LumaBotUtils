@@ -1,7 +1,7 @@
-bot-token: ""
+bot-token: ''
 
 introductions:
-  channel: ""
+  channel: ''
 
 suggestions:
-  channel: ""
+  channel: ''
