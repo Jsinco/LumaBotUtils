@@ -1,12 +1,10 @@
 package dev.jsinco.lumabotutils.modules
 
 import club.minnced.discord.webhook.external.JDAWebhookClient
-import club.minnced.discord.webhook.receive.ReadonlyMessage
 import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbed.EmbedField
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import dev.jsinco.abstractjavafilelib.schemas.JsonSavingSchema
 import dev.jsinco.lumabotutils.Main
 import dev.jsinco.lumabotutils.WebhookUtil
 import dev.jsinco.lumabotutils.commands.Command
@@ -55,10 +53,21 @@ class Introductions : Command, Listener {
 
 
 
-    override fun onEvent(type: ListenerType, event: Any) {
+    override fun onEvent(type: ListenerType, event: Any?) {
         if (type != ListenerType.MODAL_INTERACTION) return
         event as ModalInteractionEvent
         if (event.modalId != "introduction") return
+        val channel: TextChannel? = (Main.getSettings().getString("introductions.channel")?.let {
+            event.jda.getGuildChannelById(
+                it
+            )
+        } as TextChannel?)
+
+        if (channel == null) {
+            event.reply("Not enabled.").queue()
+            return
+        }
+
         event.reply("Your introduction has been posted!").queue()
 
         val introData = IntroData(
@@ -69,9 +78,8 @@ class Introductions : Command, Listener {
             event.getValue("about-me")?.asString!!,
             event.getValue("minecraft-username")?.asString,
         )
-        val channel: TextChannel = (event.jda.getGuildChannelById(Main.getSettings().getString("introductions.channel")!!) as TextChannel?)!!
-        val url = WebhookUtil.getWebhook(channel).url
 
+        val url = WebhookUtil.getWebhook(channel).url
         JDAWebhookClient.withUrl(url).use { client ->
             val message = WebhookMessageBuilder()
                 .setUsername("Introductions ✨")

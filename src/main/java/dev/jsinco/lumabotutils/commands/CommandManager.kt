@@ -44,7 +44,7 @@ class CommandManager : Listener, TimerTask() {
         }
     }
 
-    override fun onEvent(type: ListenerType, event: Any) {
+    override fun onEvent(type: ListenerType, event: Any?) {
         if (type != ListenerType.SLASH_COMMAND) return // Should never happen anyway
         event as SlashCommandInteractionEvent
 

@@ -4,11 +4,14 @@ import dev.jsinco.abstractjavafilelib.schemas.JsonSavingSchema;
 import dev.jsinco.abstractjavafilelib.schemas.SnakeYamlConfig;
 import dev.jsinco.lumabotutils.commands.CommandManager;
 import dev.jsinco.lumabotutils.listeners.EventManager;
+import dev.jsinco.lumabotutils.modules.AutoRole;
 import dev.jsinco.lumabotutils.modules.Introductions;
 import dev.jsinco.lumabotutils.modules.Suggestions;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import java.util.Timer;
 
@@ -36,6 +39,8 @@ public class Main {
 
         jda = JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+                .setChunkingFilter(ChunkingFilter.ALL)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setAutoReconnect(true).build();
 
         try {
@@ -43,19 +48,25 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        final EventManager eventManager = new EventManager();
 
-        jda.addEventListener(new EventManager());
+
+        registers();
+
+        jda.addEventListener(eventManager);
+        eventManager.onJDAReady();
+    }
+
+    private static void registers() {
+        Util.registerCommandAndListener(new Suggestions());
+        Util.registerCommandAndListener(new Introductions());
+        EventManager.registerListener(new AutoRole());
 
         final CommandManager cmdManager = new CommandManager();
         EventManager.registerListener(cmdManager);
 
-
         // Start timer runnable
         final Timer timer = new Timer();
         timer.schedule(cmdManager, 0L, 300000L);
-
-
-        Util.registerCommandAndListener(new Suggestions());
-        Util.registerCommandAndListener(new Introductions());
     }
 }

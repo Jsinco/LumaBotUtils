@@ -5,3 +5,8 @@ introductions:
 
 suggestions:
   channel: ''
+
+autorole:
+  enabled: true
+  role: ''
+  guild: ''

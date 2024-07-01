@@ -45,7 +45,7 @@ class Suggestions : Command, Listener {
         return false
     }
 
-    override fun onEvent(type: ListenerType, event: Any) {
+    override fun onEvent(type: ListenerType, event: Any?) {
         event as MessageReceivedEvent
         if (!event.message.contentRaw.startsWith("!suggest ")) return
 
