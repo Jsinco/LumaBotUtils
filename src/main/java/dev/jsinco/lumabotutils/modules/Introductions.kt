@@ -15,8 +15,11 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
@@ -54,8 +57,42 @@ class Introductions : Command, Listener {
 
 
     override fun onEvent(type: ListenerType, event: Any?) {
-        if (type != ListenerType.MODAL_INTERACTION) return
-        event as ModalInteractionEvent
+
+        when (type) {
+            ListenerType.MODAL_INTERACTION -> handleModalInteraction(event as ModalInteractionEvent)
+
+            ListenerType.MESSAGE_RECEIVED -> {
+                event as MessageReceivedEvent
+                val str = event.message.contentRaw
+                if (str == "!intro" || str == "/intro") {
+                    event.message.reply("Click here to start an introduction.").addActionRow(
+                        Button.primary("intro", "Start")
+                    ).queue()
+                }
+            }
+
+            ListenerType.BUTTON_INTERACTION -> {
+                event as ButtonInteractionEvent
+                if (event.componentId != "intro") return
+                event.replyModal(getIntroModal()).queue()
+            }
+
+            else -> return
+        }
+
+
+        //val saves: JsonSavingSchema = Main.getSaves()
+        //saves.set("introduction-messages.${event.user.id}", msgId)
+        //saves.save()
+    }
+
+    override fun registerFor(): List<ListenerType> {
+        return listOf(ListenerType.MODAL_INTERACTION, ListenerType.MESSAGE_RECEIVED, ListenerType.BUTTON_INTERACTION)
+    }
+
+
+
+    private fun handleModalInteraction(event: ModalInteractionEvent) {
         if (event.modalId != "introduction") return
         val channel: TextChannel? = (Main.getSettings().getString("introductions.channel")?.let {
             event.jda.getGuildChannelById(
@@ -90,14 +127,6 @@ class Introductions : Command, Listener {
             client.close()
         }
 
-
-        //val saves: JsonSavingSchema = Main.getSaves()
-        //saves.set("introduction-messages.${event.user.id}", msgId)
-        //saves.save()
-    }
-
-    override fun registerFor(): List<ListenerType> {
-        return listOf(ListenerType.MODAL_INTERACTION)
     }
 
     private fun getIntroModal(): Modal {
