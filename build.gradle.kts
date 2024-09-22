@@ -9,12 +9,12 @@ version = "1.3-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    //maven("https://jitpack.io")
+    maven("https://jitpack.io")
 }
 
 dependencies {
-    //implementation("com.github.Jsinco:AbstractJavaFileLib:2.1")
-    implementation(files("jar-libs/AbstractJavaFileLib-2.1.jar"))
+    implementation("com.github.Jsinco:AbstractJavaFileLib:2.2")
+    //implementation(files("jar-libs/AbstractJavaFileLib-2.1.jar"))
     implementation("net.dv8tion:JDA:5.0.0-beta.24") {
         exclude(module="opus-java")
     }

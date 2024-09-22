@@ -7,6 +7,8 @@ suggestions:
   channel: ''
 
 autorole:
-  enabled: true
+  enabled: false
   role: ''
   guild: ''
+
+tbp: true # Unused atm
